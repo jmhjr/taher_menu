@@ -75,9 +75,11 @@ def lunch_menu():
 
         # Parse the JSON response
         menu_data = response.json()
-        for item in menu_data.get("Data", []):
+        for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
-                item["FormattedDate"] = format_taher_date(item["EventDateUTC"])
+                formatted_date = format_taher_date(item["EventDateUTC"])
+                item["FormattedDate"] = formatted_date
+                logging.info(f"Formatted Date Added: {formatted_date}")
 
         return jsonify(menu_data)
 
