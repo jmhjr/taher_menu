@@ -10,8 +10,8 @@ app = Flask(__name__)
 def home():
     return "Welcome to the Taher Menu API. Visit /lunch-menu to fetch the menu.", 200
 
-@app.route('/lunch-menu', methods=['GET'])
-def lunch-menu():
+@app.route('/lunch_menu', methods=['GET'])
+def lunch_menu():
     taher_api_url = "https://engage-prd-api.enbrec.net/genericitem/items"
     headers = {
         "Accept": "application/json",
