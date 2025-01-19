@@ -4,10 +4,18 @@ import requests
 import werkzeug
 from flask import Flask, jsonify
 
-# Configure logging to log to console
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,  # Set the log level to INFO
+    format="%(asctime)s - %(levelname)s - %(message)s",  # Include timestamp, log level, and message
+    handlers=[
+        logging.StreamHandler()  # Output logs to the console
+    ]
+)
 app = Flask(__name__)
+
+if __name__ == "__main__":
+    app.run(debug=True)  # Enable debug mode for Flask
 
 # Default route to handle root URL (/)
 @app.route("/", methods=["GET"])
