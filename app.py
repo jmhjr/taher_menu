@@ -5,6 +5,11 @@ from flask import Flask, jsonify
 
 app = Flask(__name__)
 
+# Default route to handle root URL (/)
+@app.route("/", methods=["GET"])
+def home():
+    return "Welcome to the Taher Menu API. Visit /lunch-menu to fetch the menu.", 200
+
 @app.route('/lunch-menu', methods=['GET'])
 def get_menu():
     # Taher API URL
