@@ -11,7 +11,7 @@ def home():
     return "Welcome to the Taher Menu API. Visit /lunch-menu to fetch the menu.", 200
 
 @app.route('/lunch-menu', methods=['GET'])
-def lunch_menu():
+def lunch-menu():
     taher_api_url = "https://engage-prd-api.enbrec.net/genericitem/items"
     headers = {
         "Accept": "application/json",
