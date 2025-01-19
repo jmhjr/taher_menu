@@ -4,6 +4,9 @@ import requests
 import werkzeug
 from flask import Flask, jsonify
 
+# Configure logging to log to console
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 app = Flask(__name__)
 
 # Default route to handle root URL (/)
@@ -37,7 +40,11 @@ def lunch_menu():
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
         }
     }
-
+    logging.info("Sending request to Taher API")
+    logging.info(f"Request URL: {taher_api_url}")
+    logging.info(f"Request Headers: {headers}")
+    logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
+    
     try:
         # Send request to the Taher API
         response = requests.post(taher_api_url, headers=headers, json=payload)
