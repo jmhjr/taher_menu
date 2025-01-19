@@ -52,6 +52,11 @@ def lunch_menu():
     logging.info(f"Request URL: {taher_api_url}")
     logging.info(f"Request Headers: {headers}")
     logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
+
+def format_taher_date(date_string):
+        timestamp = int(date_string.strip("/Date()/")) / 1000
+        date = datetime.utcfromtimestamp(timestamp)
+        return date.strftime("%Y-%m-%d")
     
     try:
         # Send request to the Taher API
@@ -68,8 +73,12 @@ def lunch_menu():
 
         # Parse the JSON response
         menu_data = response.json()
-        return jsonify(menu_data)
+        for item in menu_data.get("menu", []):
+            if "EventDateUTC" in item:
+                item["FormattedDate"] = format_taher_date(item["EventDateUTC"])
 
+        return jsonify(menu_data)
+        
     except requests.exceptions.RequestException as e:
         logging.error(f"Request failed: {e}")
         return {"error": f"Request failed: {e}"}, 500
