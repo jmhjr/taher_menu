@@ -54,11 +54,12 @@ def lunch_menu():
     logging.info(f"Request Headers: {headers}")
     logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
 
-    # Helper function to format Taher API date
-    def format_taher_date(date_string):
+    # Helper function to format Taher API date and append category name
+    def format_taher_date(date_string, category_name):
         timestamp = int(date_string.strip("/Date()/")) / 1000
         date = datetime.utcfromtimestamp(timestamp)
-        return date.strftime("%B %d, %A")  # Full month name, day, full weekday name
+        formatted_date = date.strftime("%B %d, %A")  # "January 19, Sunday"
+        return f"{formatted_date} - {category_name}"  # Append category name to the formatted date
 
     try:
         # Send request to the Taher API
@@ -77,9 +78,11 @@ def lunch_menu():
         menu_data = response.json()
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
-                formatted_date = format_taher_date(item["EventDateUTC"])
+                # Assuming the category name is stored in `MetaData["CategoryName"]`
+                category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
+                formatted_date = format_taher_date(item["EventDateUTC"], category_name)
                 item["FormattedDate"] = formatted_date
-                logging.info(f"Formatted Date Added: {formatted_date}")
+                logging.info(f"Formatted Date Added: {formatted_date}")          
 
         return jsonify(menu_data)
 
