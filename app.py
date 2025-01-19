@@ -26,7 +26,7 @@ def get_menu():
     # JSON payload captured from Charles
     payload = {
         "request": {
-            "Token": "Z3Z9ODCgh9H8TAdXgxYRr8gOeVyp69bkHa2qPYPWvNWUItDvMYFnXCFHcFHSRaTWLArEc8pyvV2JSl\/fHGVoLeELR1sU3RhKHVx8vCpWFzfJyFE3XDtNoyITC8udWJQpbulZ+6RhE7ROSQfWtxA3nm6tHP85cmSkvTlA2W+A4BhsXMy\/naXqh7nnjJCS+6y1aq8pl855ggsB4ZMHOusuoZTw0dLspW\/gCaDKKE4Pko4s7GEy6vzIHatiD5SZ\/Ti49ixPkaOemd+fuhAsDqEz5KBEmQU7FR+xzhTR6E8nODWiikS08eSSGPs+oBRofmWRLXZOKmLVtfQakQoKcPrWtw==",
+            "Token": r"Z3Z9ODCgh9H8TAdXgxYRr8gOeVyp69bkHa2qPYPWvNWUItDvMYFnXCFHcFHSRaTWLArEc8pyvV2JSl\/fHGVoLeELR1sU3RhKHVx8vCpWFzfJyFE3XDtNoyITC8udWJQpbulZ+6RhE7ROSQfWtxA3nm6tHP85cmSkvTlA2W+A4BhsXMy\/naXqh7nnjJCS+6y1aq8pl855ggsB4ZMHOusuoZTw0dLspW\/gCaDKKE4Pko4s7GEy6vzIHatiD5SZ\/Ti49ixPkaOemd+fuhAsDqEz5KBEmQU7FR+xzhTR6E8nODWiikS08eSSGPs+oBRofmWRLXZOKmLVtfQakQoKcPrWtw==",
             "Version": "100256",
             "Username": "hunkinsj@gmail.com",
             "UserId": "06b9e022-726c-4886-84ea-b429a6086e75",
