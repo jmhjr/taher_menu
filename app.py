@@ -14,6 +14,10 @@ def home():
 @app.route('/lunch_menu', methods=['GET'])
 def lunch_menu():
     taher_api_url = "https://engage-prd-api.enbrec.net/genericitem/items"
+    cookies = {
+        "ARRAffinity": "e36ab3397b6b1b3b97e7bb70f5e412024ab9f5606858d16ad326e2d5d5115664",
+        "ARRAffinitySameSite": "e36ab3397b6b1b3b97e7bb70f5e412024ab9f5606858d16ad326e2d5d5115664"
+    }
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
