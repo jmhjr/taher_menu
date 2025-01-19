@@ -35,7 +35,7 @@ payload = {
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
         }
     }
-    try:
+try:
         # Send request to the Taher API
         response = requests.post(taher_api_url, headers=headers, json=payload)
         logging.info(f"API Response Status Code: {response.status_code}")
@@ -52,7 +52,7 @@ payload = {
         menu_data = response.json()
         return jsonify(menu_data)
 
-    except requests.exceptions.RequestException as e:
+except requests.exceptions.RequestException as e:
         logging.error(f"Request failed: {e}")
         return {"error": f"Request failed: {e}"}, 500
     except ValueError as e:
