@@ -35,7 +35,6 @@ payload = {
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
         }
     }
-
     try:
         # Send request to the Taher API
         response = requests.post(taher_api_url, headers=headers, json=payload)
