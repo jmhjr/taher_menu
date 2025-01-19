@@ -58,7 +58,7 @@ def lunch_menu():
     def format_taher_date(date_string):
         timestamp = int(date_string.strip("/Date()/")) / 1000
         date = datetime.utcfromtimestamp(timestamp)
-        return date.strftime("%Y-%m-%d")
+        return date.strftime("%B %d, %A")  # Full month name, day, full weekday name
 
     try:
         # Send request to the Taher API
