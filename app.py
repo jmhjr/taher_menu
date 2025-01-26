@@ -70,21 +70,24 @@ def lunch_menu():
         today = datetime.utcnow()
         end_date = today + timedelta(days=2)
 
-        filtered_items = []
+        grouped_items = {}
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
                 timestamp = int(item["EventDateUTC"].strip("/Date()/")) / 1000
                 event_date = datetime.utcfromtimestamp(timestamp)
-                
+
                 if today.date() <= event_date.date() <= end_date.date():
                     category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
                     formatted_date = format_taher_date(item["EventDateUTC"], category_name)
-                    filtered_items.append({
-                        "FormattedDate": formatted_date,
-                        "name": item.get("Name", "Unknown Name")
-                    })
 
-        return jsonify(filtered_items)
+                    if formatted_date not in grouped_items:
+                        grouped_items[formatted_date] = []
+
+                    grouped_items[formatted_date].append(item["name"])
+
+        # Prepare the final response
+        final_response = [{"FormattedDate": date, "Items": items} for date, items in grouped_items.items()]
+        return jsonify(final_response)
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Request failed: {e}")
