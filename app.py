@@ -88,11 +88,18 @@ def lunch_menu():
                         if formatted_date not in grouped_items:
                             grouped_items[formatted_date] = {"Breakfast": [], "Lunch": []}
                         
-                        if "Breakfast" in category_name:
-                            grouped_items[formatted_date]["Breakfast"].append(item_name)
-                        elif "Lunch" in category_name:
-                            grouped_items[formatted_date]["Lunch"].append(item_name)
+                    #    if "Breakfast" in category_name:
+                    #        grouped_items[formatted_date]["Breakfast"].append(item_name)
+                    #    elif "Lunch" in category_name:
+                    #        grouped_items[formatted_date]["Lunch"].append(item_name)
 
+                    # Only include items categorized as "Lunch"
+                    if "Lunch" in category_name:
+                        formatted_date = format_taher_date(item["EventDateUTC"])
+                        if formatted_date not in lunch_items:
+                            lunch_items[formatted_date] = []
+                        lunch_items[formatted_date].append(item_name)
+                        
                         seen_items.add(item_name)  # Mark the item as seen
 
         # HTML output with background image and round bullets
