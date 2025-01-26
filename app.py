@@ -96,7 +96,7 @@ def lunch_menu():
                         seen_items.add(item_name)  # Mark the item as seen
 
         # HTML output with background image and round bullets
-        background_image_url = "https://your-image-url.com/lunchbox.jpg"  # Replace with your actual URL
+        background_image_url = "https://i.imgur.com/g1JUN3V.jpeg"  # Replace with your actual URL
 
         formatted_output = f"""
         <html>
