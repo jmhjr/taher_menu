@@ -39,7 +39,7 @@ def lunch_menu():
             "ItemType": "MenuItem",
             "LocalizationContext": "en-US",
             "StartDate": "2025-01-27",
-            "EndDate": "2028-02-17",
+            "EndDate": "2025-02-17",
             "Platform": "iPhone",
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
         }
@@ -82,8 +82,8 @@ def lunch_menu():
                     formatted_date = format_taher_date(item["EventDateUTC"])
                     item_name = item.get("Name", "Unnamed Item")
 
-                    # Only include items categorized as "Lunch" and avoid breakfast headers
-                    if "Lunch" in category_name:
+                    # Exclude "FILL IN SPECIAL" items and only include "Lunch"
+                    if item_name != "FILL IN SPECIAL" and "Lunch" in category_name:
                         if formatted_date not in grouped_items:
                             grouped_items[formatted_date] = []
                         grouped_items[formatted_date].append(item_name)
@@ -125,7 +125,7 @@ def lunch_menu():
         """
 
         for date, items in grouped_items.items():
-            # Only output lunch items
+            # Only output lunch items with no breakfast headers
             if items:
                 formatted_output += f"<strong>{date} - Lunch</strong><br>"
                 formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in items]) + "</ul>"
@@ -145,5 +145,6 @@ def lunch_menu():
     except ValueError as e:
         logging.error(f"Invalid JSON response: {e}")
         return {"error": f"Invalid JSON response: {e}"}, 500
+
 
 
