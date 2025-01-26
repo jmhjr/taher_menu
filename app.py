@@ -95,18 +95,62 @@ def lunch_menu():
 
                         seen_items.add(item_name)  # Mark the item as seen
 
-        # Format the output with clean, readable HTML
-        formatted_output = []
-        for date, meals in grouped_items.items():
-            formatted_output.append(f"<strong>{date}</strong><br>")
-            if meals["Breakfast"]:
-                formatted_output.append("<strong>Breakfast:</strong><br>")
-                formatted_output.extend([f"- {item}<br>" for item in meals["Breakfast"]])
-            if meals["Lunch"]:
-                formatted_output.append("<strong>Lunch:</strong><br>")
-                formatted_output.extend([f"- {item}<br>" for item in meals["Lunch"]])
+        # HTML output with background image and round bullets
+        background_image_url = "https://your-image-url.com/lunchbox.jpg"  # Replace with your actual URL
 
-        return "".join(formatted_output), 200
+        formatted_output = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    background-image: url('{background_image_url}');
+                    background-size: cover;
+                    background-position: center;
+                    color: white;
+                    font-family: Arial, sans-serif;
+                    padding: 20px;
+                }}
+                h1 {{
+                    text-align: center;
+                    font-size: 36px;
+                    font-weight: bold;
+                }}
+                strong {{
+                    color: #FFD700;  /* Gold color for bolded text */
+                }}
+                .menu-item {{
+                    margin-left: 20px;
+                    list-style-type: disc;  /* Round bullet */
+                    margin-bottom: 5px;  /* Small gap between items */
+                }}
+                .meal-type {{
+                    margin-top: 20px;
+                    font-size: 18px;
+                    font-weight: bold;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>Lunch Menu</h1>
+            <div>
+        """
+
+        for date, meals in grouped_items.items():
+            formatted_output += f"<strong>{date}</strong><br>"
+            if meals["Breakfast"]:
+                formatted_output += f"<div class='meal-type'>Breakfast:</div>"
+                formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in meals["Breakfast"]]) + "</ul>"
+            if meals["Lunch"]:
+                formatted_output += f"<div class='meal-type'>Lunch:</div>"
+                formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in meals["Lunch"]]) + "</ul>"
+
+        formatted_output += """
+            </div>
+        </body>
+        </html>
+        """
+
+        return formatted_output, 200
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Request failed: {e}")
@@ -115,4 +159,3 @@ def lunch_menu():
     except ValueError as e:
         logging.error(f"Invalid JSON response: {e}")
         return {"error": f"Invalid JSON response: {e}"}, 500
-
