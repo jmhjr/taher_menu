@@ -53,7 +53,7 @@ def lunch_menu():
     def format_taher_date(date_string, category_name):
         timestamp = int(date_string.strip("/Date()/")) / 1000
         date = datetime.utcfromtimestamp(timestamp)
-        formatted_date = date.strftime("%B %d, %A")
+        formatted_date = date.strftime("%B %d, %Y (%A)")
         return f"{formatted_date} - {category_name}"
 
     try:
@@ -70,7 +70,8 @@ def lunch_menu():
         today = datetime.utcnow()
         end_date = today + timedelta(days=2)
 
-        filtered_items = []
+        grouped_items = {}
+
         seen_items = set()  # To keep track of item names and avoid duplicates
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
@@ -84,13 +85,28 @@ def lunch_menu():
                     
                     # Filter out unwanted items and duplicates
                     if item_name != "FILL IN SPECIAL" and item_name not in seen_items:
-                        filtered_items.append({
-                            "FormattedDate": formatted_date,
-                            "name": item_name
-                        })
+                        if formatted_date not in grouped_items:
+                            grouped_items[formatted_date] = {"Breakfast": [], "Lunch": []}
+                        
+                        if "Breakfast" in category_name:
+                            grouped_items[formatted_date]["Breakfast"].append(item_name)
+                        elif "Lunch" in category_name:
+                            grouped_items[formatted_date]["Lunch"].append(item_name)
+
                         seen_items.add(item_name)  # Mark the item as seen
 
-        return jsonify(filtered_items)
+        # Format the output in the desired structure
+        formatted_output = []
+        for date, meals in grouped_items.items():
+            formatted_output.append(f"{date}:")
+            if meals["Breakfast"]:
+                formatted_output.append("Breakfast:")
+                formatted_output.extend(meals["Breakfast"])
+            if meals["Lunch"]:
+                formatted_output.append("Lunch:")
+                formatted_output.extend(meals["Lunch"])
+
+        return "<br>".join(formatted_output), 200
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Request failed: {e}")
