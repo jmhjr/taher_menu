@@ -1,7 +1,7 @@
 import logging
 import json
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, jsonify
 
 # Configure logging
@@ -76,14 +76,26 @@ def lunch_menu():
 
         # Parse the JSON response
         menu_data = response.json()
+        today = datetime.utcnow()
+        end_date = today + timedelta(days=2)  # Filter for today and the next 2 days
+
+        filtered_items = []
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
-                # Assuming the category name is stored in `MetaData["CategoryName"]`
-                category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
-                formatted_date = format_taher_date(item["EventDateUTC"], category_name)
-                item["FormattedDate"] = formatted_date
-                logging.info(f"Formatted Date Added: {formatted_date}")          
+                # Parse the EventDateUTC
+                timestamp = int(item["EventDateUTC"].strip("/Date()/")) / 1000
+                event_date = datetime.utcfromtimestamp(timestamp)
+                
+                # Filter by date range
+                if today.date() <= event_date.date() <= end_date.date():
+                    # Assuming the category name is stored in `MetaData["CategoryName"]`
+                    category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
+                    formatted_date = format_taher_date(item["EventDateUTC"], category_name)
+                    item["FormattedDate"] = formatted_date
+                    filtered_items.append(item)
 
+        # Update the response with filtered items
+        menu_data["Data"]["Items"] = filtered_items
         return jsonify(menu_data)
 
     except requests.exceptions.RequestException as e:
