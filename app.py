@@ -71,7 +71,7 @@ def lunch_menu():
 
         grouped_items = {}
 
-        seen_items = set()  # To keep track of item names and avoid duplicates
+        seen_items_by_date = {}  # Track unique items per date
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
                 timestamp = int(item["EventDateUTC"].strip("/Date()/")) / 1000
@@ -82,12 +82,16 @@ def lunch_menu():
                     formatted_date = format_taher_date(item["EventDateUTC"])
                     item_name = item.get("Name", "Unnamed Item")
 
-                    # Exclude "FILL IN SPECIAL" items and only include "Lunch"
+                    # Exclude "FILL IN SPECIAL" and ensure no duplicates
                     if item_name != "FILL IN SPECIAL" and "Lunch" in category_name:
                         if formatted_date not in grouped_items:
                             grouped_items[formatted_date] = []
-                        grouped_items[formatted_date].append(item_name)
-                        seen_items.add(item_name)  # Mark the item as seen
+                            seen_items_by_date[formatted_date] = set()
+                        
+                        # Add only if the item is not already added for this date
+                        if item_name not in seen_items_by_date[formatted_date]:
+                            grouped_items[formatted_date].append(item_name)
+                            seen_items_by_date[formatted_date].add(item_name)
 
         # HTML output
         background_image_url = "https://i.imgur.com/g1JUN3V.jpeg"  # Replace with your actual URL
@@ -125,7 +129,7 @@ def lunch_menu():
         """
 
         for date, items in grouped_items.items():
-            # Only output lunch items with no breakfast headers
+            # Only output lunch items with no breakfast headers and no duplicates
             if items:
                 formatted_output += f"<strong>{date} - Lunch</strong><br>"
                 formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in items]) + "</ul>"
@@ -145,6 +149,3 @@ def lunch_menu():
     except ValueError as e:
         logging.error(f"Invalid JSON response: {e}")
         return {"error": f"Invalid JSON response: {e}"}, 500
-
-
-
