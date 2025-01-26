@@ -54,7 +54,7 @@ def lunch_menu():
         timestamp = int(date_string.strip("/Date()/")) / 1000
         date = datetime.utcfromtimestamp(timestamp)
         formatted_date = date.strftime("%B %d, %Y (%A)")
-        return f"{formatted_date} - {category_name}"
+        return f"<strong>{formatted_date}</strong> - {category_name}"
 
     try:
         response = requests.post(taher_api_url, headers=headers, json=payload)
@@ -95,18 +95,18 @@ def lunch_menu():
 
                         seen_items.add(item_name)  # Mark the item as seen
 
-        # Format the output in the desired structure
+        # Format the output with clean, readable HTML
         formatted_output = []
         for date, meals in grouped_items.items():
-            formatted_output.append(f"{date}:")
+            formatted_output.append(f"<strong>{date}</strong><br>")
             if meals["Breakfast"]:
-               # formatted_output.append("Breakfast:")
-                formatted_output.extend(meals["Breakfast"])
+                formatted_output.append("<strong>Breakfast:</strong><br>")
+                formatted_output.extend([f"- {item}<br>" for item in meals["Breakfast"]])
             if meals["Lunch"]:
-               # formatted_output.append("Lunch:")
-                formatted_output.extend(meals["Lunch"])
+                formatted_output.append("<strong>Lunch:</strong><br>")
+                formatted_output.extend([f"- {item}<br>" for item in meals["Lunch"]])
 
-        return "<br>".join(formatted_output), 200
+        return "".join(formatted_output), 200
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Request failed: {e}")
@@ -115,3 +115,4 @@ def lunch_menu():
     except ValueError as e:
         logging.error(f"Invalid JSON response: {e}")
         return {"error": f"Invalid JSON response: {e}"}, 500
+
