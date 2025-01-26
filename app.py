@@ -100,10 +100,10 @@ def lunch_menu():
         for date, meals in grouped_items.items():
             formatted_output.append(f"{date}:")
             if meals["Breakfast"]:
-                formatted_output.append("Breakfast:")
+               # formatted_output.append("Breakfast:")
                 formatted_output.extend(meals["Breakfast"])
             if meals["Lunch"]:
-                formatted_output.append("Lunch:")
+               # formatted_output.append("Lunch:")
                 formatted_output.extend(meals["Lunch"])
 
         return "<br>".join(formatted_output), 200
