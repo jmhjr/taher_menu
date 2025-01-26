@@ -39,7 +39,7 @@ def lunch_menu():
             "ItemType": "MenuItem",
             "LocalizationContext": "en-US",
             "StartDate": "2025-01-27",
-            "EndDate": "2025-02-17",
+            "EndDate": "2028-02-17",
             "Platform": "iPhone",
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
         }
@@ -50,11 +50,10 @@ def lunch_menu():
     logging.info(f"Request Headers: {headers}")
     logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
 
-    def format_taher_date(date_string, category_name):
+    def format_taher_date(date_string):
         timestamp = int(date_string.strip("/Date()/")) / 1000
         date = datetime.utcfromtimestamp(timestamp)
-        formatted_date = date.strftime("%B %d, %Y (%A)")
-        return f"<strong>{formatted_date}</strong> - {category_name}"
+        return date.strftime("%B %d, %Y (%A)")
 
     try:
         response = requests.post(taher_api_url, headers=headers, json=payload)
@@ -80,20 +79,17 @@ def lunch_menu():
 
                 if today.date() <= event_date.date() <= end_date.date():
                     category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
-                    formatted_date = format_taher_date(item["EventDateUTC"], category_name)
+                    formatted_date = format_taher_date(item["EventDateUTC"])
                     item_name = item.get("Name", "Unnamed Item")
-                    
-                    # Filter out unwanted items and duplicates
-                    if item_name != "FILL IN SPECIAL" and item_name not in seen_items:
-                        if formatted_date not in grouped_items:
-                            grouped_items[formatted_date] = {"Lunch": []}
-                        
-                        if "Lunch" in category_name:
-                            grouped_items[formatted_date]["Lunch"].append(item_name)
 
+                    # Only include items categorized as "Lunch" and avoid breakfast headers
+                    if "Lunch" in category_name:
+                        if formatted_date not in grouped_items:
+                            grouped_items[formatted_date] = []
+                        grouped_items[formatted_date].append(item_name)
                         seen_items.add(item_name)  # Mark the item as seen
 
-        # HTML output with background image and round bullets
+        # HTML output
         background_image_url = "https://i.imgur.com/g1JUN3V.jpeg"  # Replace with your actual URL
 
         formatted_output = f"""
@@ -128,10 +124,11 @@ def lunch_menu():
             <div>
         """
 
-        for date, meals in grouped_items.items():
-            formatted_output += f"<strong>{date}</strong><br>"
-            if meals["Lunch"]:
-                formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in meals["Lunch"]]) + "</ul>"
+        for date, items in grouped_items.items():
+            # Only output lunch items
+            if items:
+                formatted_output += f"<strong>{date} - Lunch</strong><br>"
+                formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in items]) + "</ul>"
 
         formatted_output += """
             </div>
