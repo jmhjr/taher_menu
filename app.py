@@ -71,18 +71,24 @@ def lunch_menu():
         end_date = today + timedelta(days=2)
 
         filtered_items = []
+        seen_items = set()  # To keep track of item names and avoid duplicates
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
                 timestamp = int(item["EventDateUTC"].strip("/Date()/")) / 1000
                 event_date = datetime.utcfromtimestamp(timestamp)
-                
+
                 if today.date() <= event_date.date() <= end_date.date():
                     category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
                     formatted_date = format_taher_date(item["EventDateUTC"], category_name)
-                    filtered_items.append({
-                        "FormattedDate": formatted_date,
-                        "name": item.get("Name", "Unnamed Item")
-                    })
+                    item_name = item.get("Name", "Unnamed Item")
+                    
+                    # Filter out unwanted items and duplicates
+                    if item_name != "FILL IN SPECIAL" and item_name not in seen_items:
+                        filtered_items.append({
+                            "FormattedDate": formatted_date,
+                            "name": item_name
+                        })
+                        seen_items.add(item_name)  # Mark the item as seen
 
         return jsonify(filtered_items)
 
@@ -93,6 +99,3 @@ def lunch_menu():
     except ValueError as e:
         logging.error(f"Invalid JSON response: {e}")
         return {"error": f"Invalid JSON response: {e}"}, 500
-
-if __name__ == "__main__":
-    app.run(debug=True)
