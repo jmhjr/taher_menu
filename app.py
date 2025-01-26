@@ -83,7 +83,7 @@ def lunch_menu():
                     item_name = item.get("Name", "Unnamed Item")
 
                     # Exclude "FILL IN SPECIAL" items and items containing the word "milk"
-                    if item_name != "FILL IN SPECIAL" and "milk" and "Dinner Roll" not in item_name.lower() and "Lunch" in category_name:
+                    if item_name != "FILL IN SPECIAL" and "milk" not in item_name.lower() and "Lunch" in category_name:
                         if formatted_date not in grouped_items:
                             grouped_items[formatted_date] = []
                         grouped_items[formatted_date].append(item_name)
