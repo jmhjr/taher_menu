@@ -82,16 +82,12 @@ def lunch_menu():
                     formatted_date = format_taher_date(item["EventDateUTC"])
                     item_name = item.get("Name", "Unnamed Item")
 
-                    # Exclude "FILL IN SPECIAL" and ensure no duplicates
-                    if item_name != "FILL IN SPECIAL" and "Lunch" in category_name:
+                    # Exclude "FILL IN SPECIAL" items and items containing the word "milk"
+                    if item_name != "FILL IN SPECIAL" and "milk" not in item_name.lower() and "Lunch" in category_name:
                         if formatted_date not in grouped_items:
                             grouped_items[formatted_date] = []
-                            seen_items_by_date[formatted_date] = set()
-                        
-                        # Add only if the item is not already added for this date
-                        if item_name not in seen_items_by_date[formatted_date]:
-                            grouped_items[formatted_date].append(item_name)
-                            seen_items_by_date[formatted_date].add(item_name)
+                        grouped_items[formatted_date].append(item_name)
+                        seen_items_by_date.setdefault(formatted_date, set()).add(item_name)  # Track seen items for each date
 
         # HTML output
         background_image_url = "https://i.imgur.com/g1JUN3V.jpeg"  # Replace with your actual URL
