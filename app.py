@@ -138,10 +138,10 @@ def lunch_menu():
         for date, meals in grouped_items.items():
             formatted_output += f"<strong>{date}</strong><br>"
             if meals["Breakfast"]:
-                formatted_output += f"<div class='meal-type'>Breakfast:</div>"
+               # formatted_output += f"<div class='meal-type'>Breakfast:</div>"
                 formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in meals["Breakfast"]]) + "</ul>"
             if meals["Lunch"]:
-                formatted_output += f"<div class='meal-type'>Lunch:</div>"
+               $ formatted_output += f"<div class='meal-type'>Lunch:</div>"
                 formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in meals["Lunch"]]) + "</ul>"
 
         formatted_output += """
