@@ -96,9 +96,9 @@ def lunch_menu():
                     # Only include items categorized as "Lunch"
                     if "Lunch" in category_name:
                         formatted_date = format_taher_date(item["EventDateUTC"])
-                        if formatted_date not in lunch_items:
-                            lunch_items[formatted_date] = []
-                        lunch_items[formatted_date].append(item_name)
+                        if formatted_date not in grouped_items:
+                            grouped_items[formatted_date] = []
+                        grouped_items[formatted_date].append(item_name)
                         
                         seen_items.add(item_name)  # Mark the item as seen
 
