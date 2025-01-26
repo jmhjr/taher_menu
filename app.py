@@ -50,10 +50,11 @@ def lunch_menu():
     logging.info(f"Request Headers: {headers}")
     logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
 
-    def format_taher_date(date_string):
+    def format_taher_date(date_string, category_name):
         timestamp = int(date_string.strip("/Date()/")) / 1000
         date = datetime.utcfromtimestamp(timestamp)
-        return date.strftime("%B %d, %A")  # "January 19, Sunday"
+        formatted_date = date.strftime("%B %d, %A")  # "January 19, Sunday"
+        return f"{formatted_date} - {category_name}"
 
     try:
         response = requests.post(taher_api_url, headers=headers, json=payload)
@@ -76,7 +77,8 @@ def lunch_menu():
                 event_date = datetime.utcfromtimestamp(timestamp)
                 
                 if today.date() <= event_date.date() <= end_date.date():
-                    formatted_date = format_taher_date(item["EventDateUTC"])
+                    category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
+                    formatted_date = format_taher_date(item["EventDateUTC"], category_name)
                     filtered_items.append({
                         "FormattedDate": formatted_date,
                         "name": item.get("Name", "Unknown Name")
