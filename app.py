@@ -50,10 +50,11 @@ def lunch_menu():
     logging.info(f"Request Headers: {headers}")
     logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
 
-    def format_taher_date(date_string):
+    def format_taher_date(date_string, category_name):
         timestamp = int(date_string.strip("/Date()/")) / 1000
         date = datetime.utcfromtimestamp(timestamp)
-        return date.strftime("%B %d, %Y (%A)")
+        formatted_date = date.strftime("%B %d, %Y (%A)")
+        return f"<strong>{formatted_date}</strong> - {category_name}"
 
     try:
         response = requests.post(taher_api_url, headers=headers, json=payload)
@@ -79,17 +80,20 @@ def lunch_menu():
 
                 if today.date() <= event_date.date() <= end_date.date():
                     category_name = item.get("MetaData", {}).get("CategoryName", "Unknown Category")
-                    formatted_date = format_taher_date(item["EventDateUTC"])
+                    formatted_date = format_taher_date(item["EventDateUTC"], category_name)
                     item_name = item.get("Name", "Unnamed Item")
                     
-                    # Only include items categorized as "Lunch"
-                    if "Lunch" in category_name:
+                    # Filter out unwanted items and duplicates
+                    if item_name != "FILL IN SPECIAL" and item_name not in seen_items:
                         if formatted_date not in grouped_items:
-                            grouped_items[formatted_date] = []
-                        grouped_items[formatted_date].append(item_name)
+                            grouped_items[formatted_date] = {"Lunch": []}
+                        
+                        if "Lunch" in category_name:
+                            grouped_items[formatted_date]["Lunch"].append(item_name)
+
                         seen_items.add(item_name)  # Mark the item as seen
 
-        # HTML output
+        # HTML output with background image and round bullets
         background_image_url = "https://i.imgur.com/g1JUN3V.jpeg"  # Replace with your actual URL
 
         formatted_output = f"""
@@ -124,10 +128,10 @@ def lunch_menu():
             <div>
         """
 
-        for date, items in grouped_items.items():
-            formatted_output += f"<strong>{date}</strong><ul>"
-            formatted_output += "".join([f"<li class='menu-item'>{item}</li>" for item in items])
-            formatted_output += "</ul>"
+        for date, meals in grouped_items.items():
+            formatted_output += f"<strong>{date}</strong><br>"
+            if meals["Lunch"]:
+                formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in meals["Lunch"]]) + "</ul>"
 
         formatted_output += """
             </div>
@@ -144,4 +148,5 @@ def lunch_menu():
     except ValueError as e:
         logging.error(f"Invalid JSON response: {e}")
         return {"error": f"Invalid JSON response: {e}"}, 500
+
 
