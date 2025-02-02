@@ -31,7 +31,7 @@ def lunch_menu():
 
     payload = {
         "request": {
-            "Token": r"MyYkXV6FsdlQqOQwqG1F86Py4C6sDmr7jT0BXDgE0i/nSSt2pti1DQpWB36O3NoJjDjqZYOztjktzt+sM6nhjP9CqodPtw4yvCxznhpe0YZA15CxBXbshSfysv5yV3iaKVrOwKmFqZDEToY0y6e2s+0zEuAsAsBzBPlD77OwzzIPxY/Be6g+Wz7LT7ZTEFmxOMHT1KoDI8YgeAJMHUiotFXEI5H1r76cYMG8375qTNKlhlVHFBIRiKLUB7sHiqrfukNSnLNVg6cY0MQfXfksGI/8QjHigEhjoqNAWBFLjCPzRsPaxQgnByagHtzBb/RCbSjIShHbmYAzUWZrEBb+GYd7iIOUfX9t5SKq+xJEcZY=",
+            "Token": r"ZhvBwGmDA5dEo+JZ02In0YKtzJSNaT6kmmtlj0yD9m5fEKdDxB7efBhvwhbl5AUeWsNDhJDQh5SaXvpa3CfD6bhja311Cc3SIdxX3RhbOkt0nUUFv8NU8E9yA12VywMqPatagOgmKh04dXquZ+itfwHZKP5pVcYPU4plFdDOIaiMDbhBikHKs+ZeiSGEqFvzxDtm6TDQO1i8OEPrpz2ccR0mW5+7i9QuLixk0d89nTyTkF+VKcXoGlR4lCkt8JGviGEh2nJABAN5gWLPf+JkSYeOT5Ub7sCyS5o6tQTe0QD+aKmdjrGEg8eNW0ZdkEBsnr213CTKBZsC49D59kexQKYNI1OycDLEcL75ecw7uDM=",
             "Version": "100256",
             "Username": "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com",
             "UserId": "190636b1-46d4-4987-b06d-ff0dc6707e6e",
