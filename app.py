@@ -13,6 +13,58 @@ logging.basicConfig(
 
 app = Flask(__name__)
 
+# Global variables to store token and expiration time
+TAHER_API_TOKEN = None
+TOKEN_EXPIRATION_TIME = None
+
+# User credentials for authentication
+USERNAME = "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com"
+PASSWORD = "Test1234"
+
+def get_taher_token():
+    """Retrieve a fresh token from the authentication endpoint if expired or not set."""
+    global TAHER_API_TOKEN, TOKEN_EXPIRATION_TIME
+
+    # If token exists and is still valid, return it
+    if TAHER_API_TOKEN and TOKEN_EXPIRATION_TIME and datetime.utcnow() < TOKEN_EXPIRATION_TIME:
+        return TAHER_API_TOKEN
+
+    logging.info("Fetching new Taher API token...")
+
+    auth_url = "https://engage-prd-api.enbrec.net/authenticate/authenticateuser"
+
+    auth_payload = {
+        "Username": USERNAME,
+        "Password": PASSWORD
+    }
+
+    auth_headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "User-Agent": "Taher/100256 CFNetwork/3826.400.110 Darwin/24.3.0"
+    }
+
+    try:
+        response = requests.post(auth_url, json=auth_payload, headers=auth_headers)
+        response.raise_for_status()
+
+        auth_data = response.json()
+
+        new_token = auth_data.get("Token")
+        if not new_token:
+            logging.error("Failed to retrieve token: No token found in response")
+            return None
+
+        TAHER_API_TOKEN = new_token
+        TOKEN_EXPIRATION_TIME = datetime.utcnow() + timedelta(minutes=60)
+
+        logging.info(f"New Token Acquired: {TAHER_API_TOKEN}")
+        return TAHER_API_TOKEN
+
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to get token: {e}")
+        return None
+
 @app.route("/", methods=["GET"])
 def home():
     return "Welcome to the Taher Menu API. Visit /lunch_menu to fetch the menu.", 200
@@ -25,15 +77,14 @@ def lunch_menu():
         "Accept": "application/json",
         "Content-Type": "application/json",
         "User-Agent": "Taher/100256 CFNetwork/3826.400.110 Darwin/24.3.0",
-        "Cookie": "ARRAffinity=e36ab3397b6b1b3b97e7bb70f5e412024ab9f5606858d16ad326e2d5d5115664; "
-                  "ARRAffinitySameSite=e36ab3397b6b1b3b97e7bb70f5e412024ab9f5606858d16ad326e2d5d5115664"
+        "Authorization": f"Bearer {get_taher_token()}"
     }
 
     payload = {
         "request": {
-            "Token": r"ZhvBwGmDA5dEo+JZ02In0YKtzJSNaT6kmmtlj0yD9m5fEKdDxB7efBhvwhbl5AUeWsNDhJDQh5SaXvpa3CfD6bhja311Cc3SIdxX3RhbOkt0nUUFv8NU8E9yA12VywMqPatagOgmKh04dXquZ+itfwHZKP5pVcYPU4plFdDOIaiMDbhBikHKs+ZeiSGEqFvzxDtm6TDQO1i8OEPrpz2ccR0mW5+7i9QuLixk0d89nTyTkF+VKcXoGlR4lCkt8JGviGEh2nJABAN5gWLPf+JkSYeOT5Ub7sCyS5o6tQTe0QD+aKmdjrGEg8eNW0ZdkEBsnr213CTKBZsC49D59kexQKYNI1OycDLEcL75ecw7uDM=",
+            "Token": get_taher_token(),
             "Version": "100256",
-            "Username": "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com",
+            "Username": USERNAME,
             "UserId": "190636b1-46d4-4987-b06d-ff0dc6707e6e",
             "AppIdentifier": "TAHER",
             "ItemType": "MenuItem",
@@ -46,9 +97,6 @@ def lunch_menu():
     }
 
     logging.info("Sending request to Taher API")
-    logging.info(f"Request URL: {taher_api_url}")
-    logging.info(f"Request Headers: {headers}")
-    logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
 
     def format_taher_date(date_string):
         timestamp = int(date_string.strip("/Date()/")) / 1000
@@ -57,8 +105,12 @@ def lunch_menu():
 
     try:
         response = requests.post(taher_api_url, headers=headers, json=payload)
-        logging.info(f"API Response Status Code: {response.status_code}")
-        logging.info(f"API Response Content: {response.text}")
+
+        if response.status_code == 403:
+            logging.warning("403 Forbidden - Token may be expired. Fetching new token...")
+            headers["Authorization"] = f"Bearer {get_taher_token()}"
+            payload["request"]["Token"] = get_taher_token()
+            response = requests.post(taher_api_url, headers=headers, json=payload)
 
         response.raise_for_status()
 
@@ -70,8 +122,8 @@ def lunch_menu():
         end_date = today + timedelta(days=10)
 
         grouped_items = {}
+        seen_items_by_date = {}
 
-        seen_items_by_date = {}  # Track unique items per date
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
                 timestamp = int(item["EventDateUTC"].strip("/Date()/")) / 1000
@@ -82,15 +134,13 @@ def lunch_menu():
                     formatted_date = format_taher_date(item["EventDateUTC"])
                     item_name = item.get("Name", "Unnamed Item")
 
-                    # Exclude "FILL IN SPECIAL" items and items containing the word "milk"
                     if item_name != "FILL IN SPECIAL" and "milk" not in item_name.lower() and "Lunch" in category_name:
                         if formatted_date not in grouped_items:
                             grouped_items[formatted_date] = []
                         grouped_items[formatted_date].append(item_name)
-                        seen_items_by_date.setdefault(formatted_date, set()).add(item_name)  # Track seen items for each date
+                        seen_items_by_date.setdefault(formatted_date, set()).add(item_name)
 
-        # HTML output
-        background_image_url = "https://i.imgur.com/g1JUN3V.jpeg"  # Replace with your actual URL
+        background_image_url = "https://i.imgur.com/g1JUN3V.jpeg"
 
         formatted_output = f"""
         <html>
@@ -110,12 +160,12 @@ def lunch_menu():
                     font-weight: bold;
                 }}
                 strong {{
-                    color: #FFD700;  /* Gold color for bolded text */
+                    color: #FFD700;
                 }}
                 .menu-item {{
                     margin-left: 20px;
-                    list-style-type: disc;  /* Round bullet */
-                    margin-bottom: 5px;  /* Small gap between items */
+                    list-style-type: disc;
+                    margin-bottom: 5px;
                 }}
             </style>
         </head>
@@ -125,7 +175,6 @@ def lunch_menu():
         """
 
         for date, items in grouped_items.items():
-            # Only output lunch items with no breakfast headers and no duplicates
             if items:
                 formatted_output += f"<strong>{date} - Lunch</strong><br>"
                 formatted_output += "<ul>" + "".join([f"<li class='menu-item'>{item}</li>" for item in items]) + "</ul>"
