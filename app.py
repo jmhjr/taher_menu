@@ -163,8 +163,13 @@ def lunch_menu():
                     color: white;
                     font-family: Arial, sans-serif;
                     padding: 20px;
-		    overflow: hidden; 
+		    overflow-y: scroll; /* Ensures the content is scrollable */
                 }}
+		/* Hide vertical scrollbar, but keep the ability to scroll */
+		body::-webkit-scrollbar {{
+		    width: 0px; /* Hides the scrollbar */
+		    background: transparent; /* Optional: makes background transparent */
+		    }}
                 h1 {{
                     text-align: center;
                     font-size: 36px;
