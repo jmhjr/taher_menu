@@ -57,7 +57,7 @@ def get_taher_token():
         logging.info(f"Auth API Response: {json.dumps(auth_data, indent=2)}")
 
         # Extract token (modify this based on actual API response structure)
-        new_token = auth_data.get("Token")  # Try different keys if this is None
+        new_token = auth_data.get("Data", {}).get("Token")  # Try different keys if this is None
 
         if not new_token:
             logging.error("Failed to retrieve token: No token found in response")
