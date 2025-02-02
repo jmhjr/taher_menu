@@ -25,7 +25,6 @@ def get_taher_token():
     """Retrieve a fresh token from the authentication endpoint if expired or not set."""
     global TAHER_API_TOKEN, TOKEN_EXPIRATION_TIME
 
-    # If token exists and is still valid, return it
     if TAHER_API_TOKEN and TOKEN_EXPIRATION_TIME and datetime.utcnow() < TOKEN_EXPIRATION_TIME:
         return TAHER_API_TOKEN
 
@@ -50,11 +49,17 @@ def get_taher_token():
 
         auth_data = response.json()
 
-        new_token = auth_data.get("Token")
+        # Log the full response for debugging
+        logging.info(f"Auth API Response: {json.dumps(auth_data, indent=2)}")
+
+        # Extract token (modify this based on actual API response structure)
+        new_token = auth_data.get("Token")  # Try different keys if this is None
+
         if not new_token:
             logging.error("Failed to retrieve token: No token found in response")
             return None
 
+        # Set token and expiration time
         TAHER_API_TOKEN = new_token
         TOKEN_EXPIRATION_TIME = datetime.utcnow() + timedelta(minutes=60)
 
@@ -64,6 +69,7 @@ def get_taher_token():
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to get token: {e}")
         return None
+
 
 @app.route("/", methods=["GET"])
 def home():
