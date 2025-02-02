@@ -163,6 +163,7 @@ def lunch_menu():
                     color: white;
                     font-family: Arial, sans-serif;
                     padding: 20px;
+		    overflow: hidden; 
                 }}
                 h1 {{
                     text-align: center;
