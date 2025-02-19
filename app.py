@@ -157,16 +157,10 @@ def lunch_menu():
         <html>
         <head>
             <style>
-	   	 html, body {
-    		     margin: 0;
-    		     padding: 0;
-   		     height: 100%;
-		 }
-
                 body {
                     background-image: url('{background_image_url}');
                     background-size: cover;
-                    background-position: center center;
+                    background-position: center;
 		    background-attachment: fixed; /* Do not repeat the image*/
              	    min-height: 100vh; /* Ensure the body covers the full viewport height */
                     color: white;
