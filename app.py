@@ -34,11 +34,11 @@ def get_taher_token():
 
     auth_payload = {
         "AppIdentifier": "TAHER",
-        "Version": "100256",
-        "LocalizationContext": "en-US",
-        "Platform": "iPhone",
-        "Password": "Test1234",
-        "Username": "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com"
+	    "Version": "100256",
+	    "LocalizationContext": "en-US",
+	    "Platform": "iPhone",
+	    "Password": "Test1234",
+	    "Username": "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com"
     }
 
     auth_headers = {
