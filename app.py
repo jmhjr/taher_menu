@@ -34,11 +34,11 @@ def get_taher_token():
 
     auth_payload = {
         "AppIdentifier": "TAHER",
-	    "Version": "100256",
-	    "LocalizationContext": "en-US",
-	    "Platform": "iPhone",
-	    "Password": "Test1234",
-	    "Username": "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com"
+        "Version": "100256",
+        "LocalizationContext": "en-US",
+        "Platform": "iPhone",
+        "Password": "Test1234",
+        "Username": "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com"
     }
 
     auth_headers = {
@@ -74,7 +74,6 @@ def get_taher_token():
         logging.error(f"Failed to get token: {e}")
         return None
 
-
 @app.route("/", methods=["GET"])
 def home():
     return "Welcome to the Taher Menu API. Visit /lunch_menu to fetch the menu.", 200
@@ -87,6 +86,8 @@ def lunch_menu():
         "Accept": "application/json",
         "Content-Type": "application/json",
         "User-Agent": "Taher/100256 CFNetwork/3826.400.110 Darwin/24.3.0",
+        "Cookie": "ARRAffinity=e36ab3397b6b1b3b97e7bb70f5e412024ab9f5606858d16ad326e2d5d5115664; "
+                  "ARRAffinitySameSite=e36ab3397b6b1b3b97e7bb70f5e412024ab9f5606858d16ad326e2d5d5115664",
         "Authorization": f"Bearer {get_taher_token()}"
     }
 
@@ -94,19 +95,22 @@ def lunch_menu():
         "request": {
             "Token": get_taher_token(),
             "Version": "100256",
-            "Username": USERNAME,
+            "Username": "22FC8A67-7663-43D5-B752-615937EA2A2C@tehda.com",
             "UserId": "190636b1-46d4-4987-b06d-ff0dc6707e6e",
             "AppIdentifier": "TAHER",
             "ItemType": "MenuItem",
             "LocalizationContext": "en-US",
             "StartDate": "2025-01-27",
-            "EndDate": "2026-02-17",
+            "EndDate": "2025-02-17",
             "Platform": "iPhone",
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
         }
     }
 
     logging.info("Sending request to Taher API")
+    logging.info(f"Request URL: {taher_api_url}")
+    logging.info(f"Request Headers: {headers}")
+    logging.info(f"Request Payload: {json.dumps(payload, indent=2)}")
 
     def format_taher_date(date_string):
         timestamp = int(date_string.strip("/Date()/")) / 1000
@@ -115,6 +119,8 @@ def lunch_menu():
 
     try:
         response = requests.post(taher_api_url, headers=headers, json=payload)
+        logging.info(f"API Response Status Code: {response.status_code}")
+        logging.info(f"API Response Content: {response.text}")
 
         if response.status_code == 403:
             logging.warning("403 Forbidden - Token may be expired. Fetching new token...")
@@ -132,8 +138,7 @@ def lunch_menu():
         end_date = today + timedelta(days=10)
 
         grouped_items = {}
-        seen_items_by_date = {}
-
+        seen_items_by_date = {}  # Track unique items per date
         for item in menu_data.get("Data", {}).get("Items", []):
             if "EventDateUTC" in item:
                 timestamp = int(item["EventDateUTC"].strip("/Date()/")) / 1000
@@ -144,7 +149,10 @@ def lunch_menu():
                     formatted_date = format_taher_date(item["EventDateUTC"])
                     item_name = item.get("Name", "Unnamed Item")
 
-                    if item_name != "FILL IN SPECIAL" and "milk" not in item_name.lower() and "Lunch" in category_name:
+                    if (item_name != "FILL IN SPECIAL" and 
+                        "milk" not in item_name.lower() and 
+                        "Lunch" in category_name and 
+                        item_name != "Dinner Roll"):
                         if formatted_date not in grouped_items:
                             grouped_items[formatted_date] = []
                         grouped_items[formatted_date].append(item_name)
@@ -163,13 +171,12 @@ def lunch_menu():
                     color: white;
                     font-family: Arial, sans-serif;
                     padding: 20px;
-		    overflow-y: scroll; /* Ensures the content is scrollable */
+                    overflow-y: scroll; /* Ensures the content is scrollable */
                 }}
-		/* Hide vertical scrollbar, but keep the ability to scroll */
-		body::-webkit-scrollbar {{
-		    width: 0px; /* Hides the scrollbar */
-		    background: transparent; /* Optional: makes background transparent */
-		    }}
+                body::-webkit-scrollbar {{
+                    width: 0px; /* Hides the scrollbar */
+                    background: transparent;
+                }}
                 h1 {{
                     text-align: center;
                     font-size: 36px;
@@ -210,3 +217,6 @@ def lunch_menu():
     except ValueError as e:
         logging.error(f"Invalid JSON response: {e}")
         return {"error": f"Invalid JSON response: {e}"}, 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
