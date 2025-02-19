@@ -74,6 +74,7 @@ def get_taher_token():
         logging.error(f"Failed to get token: {e}")
         return None
 
+
 @app.route("/", methods=["GET"])
 def home():
     return "Welcome to the Taher Menu API. Visit /lunch_menu to fetch the menu.", 200
@@ -99,7 +100,7 @@ def lunch_menu():
             "ItemType": "MenuItem",
             "LocalizationContext": "en-US",
             "StartDate": "2025-01-27",
-            "EndDate": "2026-02-17",
+            "EndDate": "2027-02-17",
             "Platform": "iPhone",
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
         }
