@@ -161,7 +161,7 @@ def lunch_menu():
                     background-image: url('{background_image_url}');
                     background-size: cover;
                     background-position: center;
-		    background-repeat: no-repeat; /* Do not repeat the image*/
+		    background-attachment: fixed; /* Do not repeat the image*/
              	    min-height: 100vh; /* Ensure the body covers the full viewport height */
                     color: white;
                     font-family: Arial, sans-serif;
