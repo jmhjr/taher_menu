@@ -100,7 +100,7 @@ def lunch_menu():
             "AppIdentifier": "TAHER",
             "ItemType": "MenuItem",
             "LocalizationContext": "en-US",
-            "StartDate": "2025-01-27",
+            "StartDate": "2025-03-19",
             "EndDate": "2027-02-17",
             "Platform": "iPhone",
             "LocationID": "d7b68811-441b-4379-a279-3d96e68cfc2f"
